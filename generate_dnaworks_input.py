@@ -3,8 +3,14 @@ import os
 import subprocess
 
 def generate_dnaworks_input(sequence, output_file="run1.inp", logfile_name="run1.txt"):
-    #Set this as the template (keeping all parameters consist and unadjustable by user)
-    # Modify the template to use the custom logfile name
+    # Get the current working directory
+    working_dir = os.getcwd()  # Current directory where the script is executed
+    
+    # Define the full paths for the input file and log file in the current directory
+    output_file_path = os.path.join(working_dir, output_file)
+    logfile_name_path = os.path.join(working_dir, logfile_name)
+
+    # Template for the input file
     template = f"""# DNAWORKS.inp sample
 # Noah Peña, Nov 7th, 2024
 # 
@@ -24,23 +30,11 @@ frequency threshold 10 # default
 
 concentration oligo 1E-7 sodium 0.05 magnesium 0.002 # default
 
-
 repeat 8 # default
 
 misprime 18 tip 6 max 8 # default
 
-# weight twt 1.0 cwt 1.0 rwt 1.0 mwt 1.0 gwt 1.0 awt 1.0 lwt 1.0 pwt 1.0 fwt 1.0 # default
-
-
 logfile "{logfile_name}" # default
-
-# previous $I [ $S ]
-# previous 1 "{logfile_name}" # default
-#
-# Mutant run:
-#  PREVious 1
-#  PREVious 1 "mutant1.out"
-#
 
 NUCLeotide
 {sequence}
@@ -48,15 +42,15 @@ NUCLeotide
 """
     
     # Write to the output file
-    with open(output_file, 'w') as file:
+    with open(output_file_path, 'w') as file:
         file.write(template)
 
-    print(f"\nThank you, the input file was generated. Data is stored as {output_file}. Log file is {logfile_name}.")
+    print(f"\nThank you, the input file was generated. Data is stored as {output_file_path}. Log file is {logfile_name_path}.")
 
 def run_dnaworks(input_file):
-    #Run an dnaworks program 
+    """Run the DNAWorks program and capture its output."""
     try:
-        # Run the dnaworks command and capture its output in real-time
+        # Run the dnaworks command in the current directory with relative paths
         process = subprocess.Popen(
             ["dnaworks", input_file], 
             stdout=subprocess.PIPE, 
@@ -84,7 +78,6 @@ def run_dnaworks(input_file):
         print(f"\nError occurred while running DNAWorks: {str(e)}")
 
 def print_logfile(logfile_name):
-    """Print the contents of the log file to the screen."""
     try:
         with open(logfile_name, 'r') as log_file:
             print("\nLog file contents:")
@@ -133,20 +126,12 @@ def main():
     
     logfile_name = run_name.replace('.inp', '.txt')  # Change the extension for the log file
 
-    # Define the directory for saving the log file on the Desktop
-    desktop_path = os.path.expanduser('~/Desktop')
-    logs_directory = os.path.join(desktop_path, 'DNAworks logs')
+    # Define the paths for the input and log files (both in the current directory)
+    output_file_path = os.path.join(os.getcwd(), run_name)
+    logfile_name_path = os.path.join(os.getcwd(), logfile_name)
 
-    # Create the 'DNAworks logs' directory if it doesn't exist
-    if not os.path.exists(logs_directory):
-        os.makedirs(logs_directory)
-
-    # Update the file paths to save the log and input files in the 'DNAworks logs' directory
-    logfile_name = os.path.join(logs_directory, logfile_name)
-    run_name = os.path.join(logs_directory, run_name)
-
-    print(f"\nInput file name: {run_name}")
-    print(f"Log file name: {logfile_name}\n")
+    print(f"\nInput file name: {output_file_path}")
+    print(f"Log file name: {logfile_name_path}\n")
 
     # Step 4: Generate the input file with the custom name and logfile name
     generate_dnaworks_input(sequence_input, run_name, logfile_name)
@@ -169,3 +154,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
