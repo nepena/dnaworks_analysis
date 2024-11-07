@@ -3,7 +3,7 @@ import os
 import subprocess
 
 def generate_dnaworks_input(sequence, output_file="run1.inp", logfile_name="run1.txt"):
-    """Generate the DNAWorks input file with the provided sequence."""
+    #Set this as the template (keeping all parameters consist and unadjustable by user)
     # Modify the template to use the custom logfile name
     template = f"""# DNAWORKS.inp sample
 # Noah Peña, Nov 7th, 2024
@@ -54,7 +54,7 @@ NUCLeotide
     print(f"\nThank you, the input file was generated. Data is stored as {output_file}. Log file is {logfile_name}.")
 
 def run_dnaworks(input_file):
-    """Run the DNAWorks program and capture its output."""
+    #Run an dnaworks program 
     try:
         # Run the dnaworks command and capture its output in real-time
         process = subprocess.Popen(
